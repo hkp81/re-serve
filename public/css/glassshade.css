@@ -375,9 +375,9 @@ body {
   padding: 3.25rem 3rem;
   margin-bottom: 2.5rem;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.62) 0%, rgba(240, 253, 244, 0.52) 50%, rgba(255, 247, 237, 0.5) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(240, 253, 244, 0.16) 50%, rgba(255, 247, 237, 0.14) 100%);
   border: 1px solid rgba(255, 255, 255, 0.95);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 20px 48px -16px rgba(0, 77, 64, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.58);
 }
 
 .hero-content {
