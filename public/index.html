@@ -1,0 +1,789 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Re-serve | Serving Again - Sustainable Surplus Redistribution</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Glassmorphism Stylesheet -->
+  <link rel="stylesheet" href="css/glassshade.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Sticky Glass Navbar -->
+    <header class="navbar">
+      <a href="#" class="nav-brand" onclick="window.AppModule.switchTab('discovery')">
+        <div class="brand-icon-wrap">🍱</div>
+        <div class="brand-text">
+          <h1>Re-serve</h1>
+          <p>Serving Again &bull; Zero Waste</p>
+        </div>
+      </a>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="discovery">
+          🍱 Surplus Feed
+        </button>
+        <button class="nav-tab-btn" data-tab="partner">
+          ➕ List Surplus
+        </button>
+        <button class="nav-tab-btn" data-tab="ngo">
+          🤝 NGO Hub (₹0)
+        </button>
+        <button class="nav-tab-btn" data-tab="leaderboards">
+          🏆 Food Heroes
+        </button>
+        <button class="nav-tab-btn" data-tab="tracking">
+          📍 Live Delivery Radar
+        </button>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <div id="nav-user-container">
+          <button class="user-profile-btn" onclick="window.AppModule.openLoginModal()">
+            👤 Sign In / Join
+          </button>
+        </div>
+        <button class="btn-scanner-quick" onclick="window.ScannerModule.openScannerModal()">
+          📷 Collect Scanner
+        </button>
+        <button class="btn-sponsor-meal" onclick="window.AppModule.openSponsorModal()">
+          💖 Sponsor a Meal
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero & 3D Interactive Canvas Section -->
+    <section class="hero-section glass-panel">
+      <div class="hero-content">
+        <div class="badge-sdg-tag">
+          🌱 UN SDG 2 (Zero Hunger) &bull; SDG 12 (Responsible Consumption)
+        </div>
+        <h2 class="hero-title">
+          Serving Again: <br>
+          <span class="highlight-green">Zero Food Waste, Zero Hunger</span>
+        </h2>
+        <p class="hero-subtitle">
+          Connecting hostel messes, bakeries, corporate cafeterias, and restaurants with conscious buyers and NGO volunteers. Surplus food rescued at 50–75% discounts or freely distributed to those in need.
+        </p>
+
+        <!-- 3-Step Sustainable Ribbon -->
+        <div class="steps-ribbon">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-info">
+              <h4>List Surplus Meals</h4>
+              <p>Log safe storage temp & alerts</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-info">
+              <h4>Reserve or Donate</h4>
+              <p>50–75% off or ₹0 for NGOs</p>
+            </div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-info">
+              <h4>Collect with Dignity</h4>
+              <p>Contactless QR & OTP Handover</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Platform Impact Ticker -->
+        <div class="hero-stats-row">
+          <div class="stat-item">
+            <h3 id="stat-kg-saved">5,420 kg</h3>
+            <p>Food Rescued</p>
+          </div>
+          <div class="stat-item">
+            <h3 id="stat-meals-served">18,450</h3>
+            <p>Meals Served</p>
+          </div>
+          <div class="stat-item">
+            <h3 id="stat-co2-prevented">13,551 kg</h3>
+            <p>CO2e Prevented</p>
+          </div>
+          <div class="stat-item">
+            <h3 id="stat-people-fed" style="color: #34d399;">17,230</h3>
+            <p>People Fed</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D Canvas Box -->
+      <div class="hero-visual">
+        <div id="canvas3d-container">
+          <canvas id="spline-canvas"></canvas>
+          <div class="canvas-overlay-badge">
+            <span>✨ Interactive 3D Eco-Sphere &bull; Move mouse to rotate</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN VIEW 1: SURPLUS DISCOVERY FEED -->
+    <main id="view-discovery" class="view-section active">
+      <!-- Filter Bar -->
+      <div class="glass-panel filter-bar">
+        <div class="filter-group-tabs">
+          <button class="filter-chip active" data-type="all">All Surplus</button>
+          <button class="filter-chip" data-type="sell">🔥 50-75% Discounted</button>
+          <button class="filter-chip" data-type="donate">🤝 ₹0 Free Donation</button>
+        </div>
+
+        <div class="search-and-select">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-meals" class="search-input" placeholder="Search dish, mess, bakery, or city...">
+          </div>
+
+          <select id="venue-filter" class="custom-select">
+            <option value="all">All Outlets</option>
+            <option value="Hostel Mess">Hostel Mess</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Cafeteria">Cafeteria</option>
+            <option value="Restaurant">Restaurant</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Dynamic Surplus Meals Grid -->
+      <div class="meals-grid" id="meals-grid">
+        <!-- Rendered dynamically by discovery.js -->
+      </div>
+    </main>
+
+    <!-- MAIN VIEW 2: PARTNER SURPLUS ENTRY PORTAL -->
+    <section id="view-partner" class="view-section">
+      <div class="glass-panel form-panel">
+        <div class="form-title-group">
+          <span class="badge-sdg-tag">Partner Outlets Portal</span>
+          <h2 style="color: #fff; font-size: 1.6rem; font-weight: 800; margin-top: 0.4rem;">List Surplus Food Batch</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">
+            Prevent waste from hostel mess, cafeteria, or bakery. Choose to sell at a 50–75% discount or donate for free (₹0).
+          </p>
+        </div>
+
+        <form id="partner-listing-form">
+          <div class="form-grid">
+            <div class="form-full-col">
+              <label class="input-label">Item / Meal Title</label>
+              <input type="text" id="item-title" class="form-input" required placeholder="e.g. Royal North Indian Thali Platters (Surplus Dinner)">
+            </div>
+
+            <div>
+              <label class="input-label">Partner / Kitchen Name</label>
+              <input type="text" id="partner-name" class="form-input" required placeholder="e.g. Grand Heritage Hostel Mess">
+            </div>
+
+            <div>
+              <label class="input-label">Venue Type</label>
+              <select id="venue-type-select" class="form-select">
+                <option value="Hostel Mess">Hostel Mess</option>
+                <option value="Cafeteria">Cafeteria</option>
+                <option value="Bakery">Bakery</option>
+                <option value="Restaurant">Restaurant</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="input-label">Listing Action</label>
+              <select id="listing-type-select" class="form-select">
+                <option value="sell">Sell at 50–75% Discount</option>
+                <option value="donate">Donate Free (₹0) for Zero Hunger</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="input-label">Food Category</label>
+              <select id="category-select" class="form-select">
+                <option value="Meals">Meals / Platters</option>
+                <option value="Bakery">Bakery & Breads</option>
+                <option value="Snacks">Snacks & Wraps</option>
+                <option value="Combos">Combos</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="input-label">Original Price (₹)</label>
+              <input type="number" id="orig-price" class="form-input" min="0" value="200" required>
+            </div>
+
+            <div>
+              <label class="input-label">
+                Discount Percentage: <strong id="discount-val-label" style="color: var(--emerald-primary);">65%</strong>
+              </label>
+              <input type="range" id="discount-slider" min="50" max="75" value="65" style="width: 100%; accent-color: var(--emerald-primary); margin-top: 0.6rem;">
+            </div>
+
+            <div>
+              <label class="input-label">Total Weight (kg)</label>
+              <input type="number" id="weight-kg" class="form-input" step="0.5" value="8.5" required>
+            </div>
+
+            <div>
+              <label class="input-label">Number of Portions</label>
+              <input type="number" id="portions-count" class="form-input" min="1" value="10" required>
+            </div>
+
+            <div class="form-full-col">
+              <label class="input-label">Food Storage Temperature & Safety Hold</label>
+              <input type="text" id="storage-temp-input" class="form-input" value="65°C (Steam Chafing Hold)" required>
+              <div class="temp-preset-group">
+                <button type="button" class="temp-preset-btn active" data-temp="68°C (Steam Table Hot-Held)">🔥 Hot Held (68°C)</button>
+                <button type="button" class="temp-preset-btn" data-temp="4°C (Commercial Chiller)">❄️ Cold Well (4°C)</button>
+                <button type="button" class="temp-preset-btn" data-temp="21°C (Ambient Bakery Shelf)">🌿 Bakery Ambient (21°C)</button>
+                <button type="button" class="temp-preset-btn" data-temp="70°C (Insulated Cambro Carrier)">🍲 Insulated Vessel (70°C)</button>
+              </div>
+            </div>
+
+            <div class="form-full-col">
+              <label class="input-label">Condition & Hygiene Notes</label>
+              <textarea id="food-condition" class="form-textarea" rows="2" placeholder="Describe preparation time, packaging, and freshness guarantee...">Freshly packed 30 minutes ago in food-grade insulated containers. 100% edible and untouched.</textarea>
+            </div>
+
+            <div>
+              <label class="input-label">Campus / City Location</label>
+              <input type="text" id="outlet-city" class="form-input" value="Noida" required>
+            </div>
+
+            <div>
+              <label class="input-label">Expiry Alert Timer (Hours)</label>
+              <input type="number" id="expiry-hours-input" class="form-input" step="0.5" min="0.5" max="8" value="3.0">
+            </div>
+
+            <!-- Live Card Preview -->
+            <div class="form-full-col" id="listing-live-preview">
+              <!-- Rendered dynamically by partner-dashboard.js -->
+            </div>
+
+            <div class="form-full-col">
+              <button type="submit" class="btn-action-primary" style="width: 100%; justify-content: center; padding: 0.9rem; font-size: 1rem;">
+                🚀 Post Surplus Batch to Live Feed
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- MAIN VIEW 3: NGO & VOLUNTEER ZERO HUNGER HUB -->
+    <section id="view-ngo" class="view-section">
+      <div class="glass-panel" style="padding: 2.25rem; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <span class="badge-sdg-tag">🤝 Humanitarian Rescue Track</span>
+            <h2 style="color: #fff; font-size: 1.6rem; font-weight: 800;">NGO & Volunteer Distribution Hub</h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">
+              Verified food charities and student volunteer clubs claim zero-cost batches to feed vulnerable communities.
+            </p>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <div class="glass-card" style="padding: 0.75rem 1.25rem; text-align: center;">
+              <span id="ngo-impact-people-fed" style="font-size: 1.35rem; font-weight: 800; color: #34d399;">17,230</span>
+              <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">People Fed</span>
+            </div>
+            <div class="glass-card" style="padding: 0.75rem 1.25rem; text-align: center;">
+              <span id="ngo-impact-meals" style="font-size: 1.35rem; font-weight: 800; color: #38bdf8;">18,450</span>
+              <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Meals Saved</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color: #fff; font-size: 1.15rem; margin-bottom: 1rem;">Available ₹0 Donation Batches for Immediate Claim:</h3>
+        <div id="ngo-batches-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem;">
+          <!-- Dynamically populated by ngo-dashboard.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN VIEW 4: FOOD HERO & MEAL SPONSOR LEADERBOARDS -->
+    <section id="view-leaderboards" class="view-section">
+      <!-- Food Hero 3D Card Stack Spread Section -->
+      <div class="glass-panel" style="padding: 2.25rem; margin-bottom: 2.5rem; text-align: center;">
+        <span class="badge-sdg-tag">🌟 Hall of Fame</span>
+        <h2 style="color: #fff; font-size: 1.7rem; font-weight: 800; margin-top: 0.4rem;">
+          Top Surplus Donors: Meet the <span style="color: var(--gold-hero);">Food Heroes</span>
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 680px; margin: 0 auto 1.5rem auto;">
+          Ranked by total mass donated (kg), total meal portions saved, and verified citizens fed. The leading donor earns the supreme title of <strong>"Food Hero"</strong>.
+        </p>
+
+        <!-- Stack Spread Controls -->
+        <div class="stack-controls-bar" style="justify-content: center;">
+          <button id="btn-toggle-spread" class="spread-toggle-btn">
+            Deck: Stacked View (Hover to Fan-out)
+          </button>
+        </div>
+
+        <!-- Stack Spread Cards Container -->
+        <div class="stack-spread-wrapper">
+          <div class="hero-cards-container" id="hero-cards-deck">
+            <!-- Dynamically populated by app.js & stackspreadvanilla.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Hierarchical Sponsor Leaderboard Table -->
+      <div class="glass-panel sponsors-table-card">
+        <div class="table-header-row">
+          <div>
+            <h3 style="color: #fff; font-size: 1.25rem; font-weight: 800;">Civic Meal Sponsors Leaderboard</h3>
+            <p style="color: var(--text-muted); font-size: 0.8rem;">Individuals funding subsidized meals for the hungry, divided across geographic tiers.</p>
+          </div>
+
+          <!-- Tier Pills: City -> District -> State -> Country -->
+          <div class="sponsor-tier-pills">
+            <button class="sponsor-tier-btn active" data-tier="all">All Tiers</button>
+            <button class="sponsor-tier-btn" data-tier="city">🏙️ City</button>
+            <button class="sponsor-tier-btn" data-tier="district">📍 District</button>
+            <button class="sponsor-tier-btn" data-tier="state">🗺️ State</button>
+            <button class="sponsor-tier-btn" data-tier="country">🇮🇳 Country</button>
+          </div>
+        </div>
+
+        <table class="rankings-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Sponsor Name</th>
+              <th>Meals Sponsored</th>
+              <th>Jurisdiction</th>
+              <th>Tier Level</th>
+            </tr>
+          </thead>
+          <tbody id="sponsors-table-body">
+            <!-- Dynamically populated by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MAIN VIEW 5: LIVE DELIVERY & VOLUNTEER RADAR -->
+    <section id="view-tracking" class="view-section">
+      <div class="glass-panel" style="padding: 2.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span class="badge-sdg-tag">🛰️ Live Telemetry</span>
+            <h2 style="color: #fff; font-size: 1.6rem; font-weight: 800;">Courier & Volunteer Pickup Radar</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">
+              Tracking active volunteer courier en route to inspect and collect surplus food.
+            </p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--emerald-primary); padding: 0.4rem 0.9rem; border-radius: var(--radius-full);">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></div>
+            <span style="font-size: 0.78rem; font-weight: 700; color: #34d399;">GPS LIVE FEED ACTIVE</span>
+          </div>
+        </div>
+
+        <div class="tracking-layout">
+          <!-- Animated Radar Map Canvas -->
+          <div class="map-container-glass">
+            <canvas id="map-canvas"></canvas>
+          </div>
+
+          <!-- Sidebar Timeline & Courier Info -->
+          <div class="tracking-sidebar">
+            <div class="glass-card" style="padding: 1.25rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--emerald-primary);">
+                <div>
+                  <h4 id="tracking-vol-name" style="color: #fff; font-size: 0.95rem; font-weight: 800;">Rahul Verma</h4>
+                  <p id="tracking-vol-vehicle" style="color: var(--text-muted); font-size: 0.75rem;">Electric Cargo Scooter (EV)</p>
+                </div>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.8rem; margin-bottom: 0.5rem;">
+                <span style="color: var(--text-muted);">Estimated ETA:</span>
+                <strong id="tracking-eta" style="color: var(--emerald-primary);">5 mins</strong>
+              </div>
+              <div style="font-size: 0.75rem; color: var(--cyan-accent); font-weight: 600;" id="tracking-status-badge">
+                Heading to Food Partner Outlet
+              </div>
+            </div>
+
+            <!-- Milestone Step Progress -->
+            <div class="glass-card" style="padding: 1.25rem; flex-grow: 1;">
+              <h4 style="color: #fff; font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase;">
+                Delivery Journey
+              </h4>
+              <div class="timeline-step completed">
+                <div class="timeline-dot">✓</div>
+                <div>
+                  <div style="color: #fff; font-size: 0.82rem; font-weight: 700;">Volunteer Dispatched</div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Scooter departing depot</div>
+                </div>
+              </div>
+              <div class="timeline-step completed">
+                <div class="timeline-dot">✓</div>
+                <div>
+                  <div style="color: #fff; font-size: 0.82rem; font-weight: 700;">Heading to Kitchen</div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Sector 62 Expressway</div>
+                </div>
+              </div>
+              <div class="timeline-step active">
+                <div class="timeline-dot">●</div>
+                <div>
+                  <div style="color: #38bdf8; font-size: 0.82rem; font-weight: 700;">At Food Partner Outlet</div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Inspecting temperature and seals</div>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="timeline-dot">4</div>
+                <div>
+                  <div style="color: var(--text-muted); font-size: 0.82rem; font-weight: 700;">Collected Safely</div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Loaded in insulated container</div>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="timeline-dot">5</div>
+                <div>
+                  <div style="color: var(--text-muted); font-size: 0.82rem; font-weight: 700;">Arrived at Shelter</div>
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Handed over with dignity</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+    <!-- ABOUT US SECTION -->
+    <section class="glass-panel about-section">
+      <div class="about-header">
+        <span class="badge-sdg-tag">🌿 About Our Mission</span>
+        <h2 style="font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-top: 0.5rem; margin-bottom: 0.75rem;">
+          Re-serve: <span class="highlight-green">Serving Again for a Better Planet</span>
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+          Every day, millions of delicious, safe, and untouched meals from institutional messes, corporate buffets, and bakeries are discarded simply because of unpredictable footfall. Re-serve builds the civic bridge that redistributes food before it spoils—transforming waste into hope.
+        </p>
+      </div>
+
+      <div class="about-pillars-grid">
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-box" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald-dark);">
+            🍱
+          </div>
+          <h3 class="pillar-title">1. Economic Sustainability</h3>
+          <p class="pillar-desc">
+            Partners recover food preparation costs by selling surplus at <strong>50%–75% discounts</strong>. The platform charges a modest <strong>5%–10% commission</strong>, ensuring long-term technological and logistical self-reliance.
+          </p>
+        </div>
+
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-box" style="background: rgba(249, 115, 22, 0.15); color: var(--orange-primary);">
+            🤝
+          </div>
+          <h3 class="pillar-title">2. Zero Hunger (UN SDG 2)</h3>
+          <p class="pillar-desc">
+            Excess food batches are listed as <strong>₹0 humanitarian donations</strong>, instantly claimable by verified NGOs, charitable shelters, and student volunteers. <strong>₹0 platform fee</strong> is ever charged for humanitarian rescue.
+          </p>
+        </div>
+
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-box" style="background: rgba(56, 189, 248, 0.15); color: #0284c7;">
+            🛡️
+          </div>
+          <h3 class="pillar-title">3. Dignity-First Handover</h3>
+          <p class="pillar-desc">
+            We reject the stigma of charitable soup lines. Every transaction generates a standard <strong>Dynamic QR Code and 6-Digit OTP</strong>. The collection experience is confidential, respectful, and contactless.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOD SAFETY & LEGAL DISCLAIMER -->
+    <section class="disclaimer-card">
+      <div class="disclaimer-title">
+        <span>⚠️</span>
+        <span>Food Safety Advisory, FSSAI Standards & Good Samaritan Notice</span>
+      </div>
+      <p class="disclaimer-text">
+        Re-serve operates under the <strong>Food Safety and Standards Authority of India (FSSAI) Surplus Food Regulations</strong> and international <strong>Good Samaritan food donation frameworks</strong>. All food partners must adhere to stringent thermal holding regimes before listing.
+      </p>
+      
+      <div class="disclaimer-points">
+        <div class="disclaimer-point-item">
+          <span>🔥</span>
+          <span><strong>Hot-Holding Mandate:</strong> Cooked items must be maintained continuously at &ge; 63&deg;C in steam chafer tables or insulated containers.</span>
+        </div>
+        <div class="disclaimer-point-item">
+          <span>❄️</span>
+          <span><strong>Cold-Chain Mandate:</strong> Dairy, salads, and bakery patisserie must be held at &le; 4&deg;C in verified commercial refrigerators.</span>
+        </div>
+        <div class="disclaimer-point-item">
+          <span>⏳</span>
+          <span><strong>Strict 2-Hour / 4-Hour Rule:</strong> Items entering the temperature danger zone (5&deg;C&ndash;60&deg;C) are decommissioned after 4 hours to guarantee zero microbial risk.</span>
+        </div>
+        <div class="disclaimer-point-item">
+          <span>📋</span>
+          <span><strong>Allergen Notification:</strong> Customers and volunteers are advised to check packaging tags for gluten, dairy, nut, or spice warnings before distribution.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPREHENSIVE FOOTER -->
+    <footer class="app-footer">
+      <div class="footer-main-grid">
+        <div class="footer-brand">
+          <h2>Re-serve</h2>
+          <p>
+            Serving Again &bull; A sustainable surplus food rescue and redistribution network uniting kitchens, conscious diners, and NGOs to achieve Zero Waste and Zero Hunger.
+          </p>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="badge-sdg-tag" style="font-size: 0.72rem; margin: 0;">SDG 2: Zero Hunger</span>
+            <span class="badge-sdg-tag" style="font-size: 0.72rem; margin: 0; background: rgba(249,115,22,0.1); color: var(--orange-primary); border-color: rgba(249,115,22,0.3);">SDG 12: Responsible Consumption</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#" onclick="window.AppModule.switchTab('discovery')">🍱 Surplus Feed</a></li>
+            <li><a href="#" onclick="window.AppModule.switchTab('partner')">➕ List Surplus (Kitchens)</a></li>
+            <li><a href="#" onclick="window.AppModule.switchTab('ngo')">🤝 NGO Distribution Hub</a></li>
+            <li><a href="#" onclick="window.AppModule.switchTab('leaderboards')">🏆 Food Hero Hall of Fame</a></li>
+            <li><a href="#" onclick="window.AppModule.switchTab('tracking')">📍 Live GPS Radar</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#" onclick="window.AppModule.openLoginModal()">👤 Partner & NGO Login</a></li>
+            <li><a href="#" onclick="window.AppModule.openSponsorModal()">💖 Sponsor a Meal (₹30)</a></li>
+            <li><a href="#" onclick="window.ScannerModule.openScannerModal()">📷 Collect Scanner Terminal</a></li>
+            <li><a href="research.md" target="_blank">📄 Research & Tech Blueprint</a></li>
+            <li><a href="#view-partner" onclick="window.AppModule.switchTab('partner')">📜 Food Partner Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Surplus Emergency Helpline</h4>
+          <div class="footer-contact-item">
+            <span>📞</span>
+            <strong>+91 1800-RE-SERVE (Toll-Free)</strong>
+          </div>
+          <div class="footer-contact-item">
+            <span>✉️</span>
+            <span>rescue@re-serve.org</span>
+          </div>
+          <div class="footer-contact-item">
+            <span>📍</span>
+            <span>Green Campus Hub, Sector 62, Noida, India</span>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-subtle); margin-top: 0.75rem;">
+            Institutional mess coordinators can call our 24/7 volunteer dispatch hotline for rapid bulk evening food pickup.
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div>
+          &copy; 2026 <strong>Re-serve: Serving Again</strong>. Open-source MIT License. Built for Sustainable Resource Usage.
+        </div>
+        <div style="display: flex; gap: 1.25rem;">
+          <span>🌱 100% Carbon Offset Hosting</span>
+          <span>&bull;</span>
+          <span>🛡️ FSSAI & Good Samaritan Compliant</span>
+        </div>
+      </div>
+    </footer>
+  </div><!-- /.app-container -->
+
+  <!-- MODAL: CHECKOUT & DIGNITY QR/OTP COLLECTION PASS -->
+  <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="window.CheckoutModule.closeCheckout()">✕</button>
+      <div id="checkout-modal-content">
+        <!-- Rendered dynamically by checkout.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COLLECT SCANNER & OTP VERIFICATION TERMINAL -->
+  <div id="scanner-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="window.ScannerModule.closeScannerModal()">✕</button>
+      <div style="text-align: center;">
+        <span class="badge-sdg-tag">Collect With Dignity</span>
+        <h2 style="color: #fff; font-size: 1.35rem; font-weight: 800; margin-top: 0.4rem;">Handover Verification Terminal</h2>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">
+          Scan beneficiary QR code or enter the 6-digit OTP to authenticate handover.
+        </p>
+
+        <!-- Simulated Camera Viewport -->
+        <div class="scanner-frame">
+          <div class="scanner-laser"></div>
+          <div style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 1rem;">
+            📷 Align QR code inside frame
+          </div>
+        </div>
+
+        <button type="button" class="btn-scanner-quick" style="margin: 0 auto 1.25rem auto;" onclick="window.ScannerModule.simulateQrCameraScan()">
+          ⚡ Auto-Scan Camera Simulator
+        </button>
+
+        <!-- Manual OTP Entry -->
+        <div style="margin-top: 0.5rem; text-align: left;">
+          <label class="input-label">Or Enter 6-Digit OTP Code</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="scanner-otp-input" class="form-input" maxlength="6" placeholder="e.g. 482910" style="text-align: center; font-size: 1.2rem; letter-spacing: 2px; font-weight: 800;">
+            <button type="button" class="btn-action-primary" onclick="window.ScannerModule.verifyWithOtp()">
+              Verify Handover
+            </button>
+          </div>
+          <p style="font-size: 0.7rem; color: var(--text-subtle); margin-top: 0.4rem;">Tip: Try sample active OTP <code>482910</code></p>
+        </div>
+
+        <div id="scanner-result-box" style="margin-top: 1rem; display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SPONSOR A MEAL -->
+  <div id="sponsor-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="window.AppModule.closeSponsorModal()">✕</button>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span class="badge-sdg-tag">💖 Zero Hunger Movement</span>
+        <h2 style="color: #fff; font-size: 1.4rem; font-weight: 800; margin-top: 0.4rem;">Sponsor Wholesome Meals</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">
+          Fund nutritious hot meals at just ₹30/meal for students and underprivileged families. Join the civic leaderboard!
+        </p>
+      </div>
+
+      <form id="sponsor-meal-form">
+        <div style="margin-bottom: 1rem;">
+          <label class="input-label">Your Name / Organization</label>
+          <input type="text" id="sponsor-name" class="form-input" required placeholder="e.g. Radhika Sen">
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="input-label">Designation / Role</label>
+          <input type="text" id="sponsor-role" class="form-input" required placeholder="e.g. Student Volunteer / Techie">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <label class="input-label">Number of Meals</label>
+            <input type="number" id="sponsor-meal-count" class="form-input" min="5" value="15" required>
+          </div>
+          <div>
+            <label class="input-label">Total Amount (₹30/meal)</label>
+            <div id="sponsor-amount-preview" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 0.75rem; border-radius: var(--radius-md); font-weight: 800; color: var(--gold-hero); font-size: 1.1rem; text-align: center;">
+              ₹450
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <div>
+            <label class="input-label">City</label>
+            <input type="text" id="sponsor-city" class="form-input" value="Noida" required>
+          </div>
+          <div>
+            <label class="input-label">District</label>
+            <input type="text" id="sponsor-district" class="form-input" value="Gautam Buddha Nagar" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-sponsor-meal" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem;">
+          💖 Donate & Sponsor Now
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Mount Point -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Script Modules -->
+  <script src="js/spline3d.js"></script>
+  <script src="js/stackspreadvanilla.js"></script>
+  <script src="js/stackspreadreact.js"></script>
+  <script src="js/discovery.js"></script>
+  <script src="js/checkout.js"></script>
+  <script src="js/partner-dashboard.js"></script>
+  <script src="js/ngo-dashboard.js"></script>
+  <script src="js/simulator.js"></script>
+  <script src="js/scanner.js"></script>
+  <script src="js/app.js"></script>
+
+
+  <!-- MODAL: LOGIN / SIGN IN & REGISTRATION -->
+  <div id="login-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <button class="modal-close-btn" onclick="window.AppModule.closeLoginModal()">✕</button>
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <span class="badge-sdg-tag">Re-serve Authentication</span>
+        <h2 style="color: #0f172a; font-size: 1.4rem; font-weight: 800; margin-top: 0.4rem;">Sign In to Re-serve</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">
+          Select your account role to access your dashboard
+        </p>
+      </div>
+
+      <!-- Role Tabs -->
+      <div class="auth-role-tabs">
+        <button type="button" class="auth-role-btn active" data-role="diner">
+          🍽️ Diner
+        </button>
+        <button type="button" class="auth-role-btn" data-role="partner">
+          👨‍🍳 Food Partner
+        </button>
+        <button type="button" class="auth-role-btn" data-role="ngo">
+          🤝 NGO Lead
+        </button>
+      </div>
+
+      <form id="login-form">
+        <div style="margin-bottom: 1rem;">
+          <label class="input-label">Email or Phone Number</label>
+          <input type="text" id="login-email" class="form-input" required placeholder="e.g. kitchen@grandheritage.edu" value="user@reserve.org">
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label class="input-label">Password</label>
+          <input type="password" id="login-password" class="form-input" required placeholder="••••••••" value="password123">
+        </div>
+
+        <button type="submit" class="btn-action-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem;">
+          Sign In
+        </button>
+      </form>
+
+      <!-- 1-Click Demo Login for Presentation -->
+      <div class="demo-login-box">
+        <div style="font-size: 0.78rem; font-weight: 800; color: var(--emerald-dark);">
+          ⚡ 1-Click Demo Login (For Testing & Presentation):
+        </div>
+        <div class="demo-btn-group">
+          <button type="button" class="demo-role-btn" onclick="window.AppModule.demoLogin('diner')">
+            Diner (Aarav)
+          </button>
+          <button type="button" class="demo-role-btn" onclick="window.AppModule.demoLogin('partner')">
+            Kitchen (Grand Mess)
+          </button>
+          <button type="button" class="demo-role-btn" onclick="window.AppModule.demoLogin('ngo')">
+            NGO (Asha Shelter)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

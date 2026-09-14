@@ -1,0 +1,24 @@
+﻿{
+  "name": "re-serve",
+  "version": "1.0.0",
+  "description": "Re-serve (Serving Again) - Sustainable Food Rescue & Redistribution Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test-api.js"
+  },
+  "keywords": [
+    "sustainability",
+    "zero-hunger",
+    "food-waste",
+    "sdg2",
+    "sdg12",
+    "food-rescue"
+  ],
+  "author": "Re-serve Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

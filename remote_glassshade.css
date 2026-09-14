@@ -1,0 +1,615 @@
+/* ==========================================================================
+   ReServe DESIGN SYSTEM (Precision Glassmorphism 3.0)
+   Color Palette Specification:
+     - Primary (Rich): Deep Teal (#004D40)
+     - Background (Light): Off-White / Soft Ice (#F8F9FA)
+     - Accent (Subtle Warmth): Muted Gold / Warm Sand (#E5A93C)
+     - Text/Neutral: Dark Charcoal (#1C2526)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* Exact Specified Palette */
+  --color-primary: #004D40;       /* Deep Teal (Rich) */
+  --color-primary-hover: #00695C;
+  --color-primary-light: rgba(0, 77, 64, 0.08);
+  --color-primary-glow: rgba(0, 77, 64, 0.25);
+
+  --color-bg: #F8F9FA;            /* Off-White / Soft Ice */
+  --color-bg-alt: #F1F4F6;
+  
+  --color-accent: #E5A93C;         /* Muted Gold / Warm Sand */
+  --color-accent-hover: #D4982B;
+  --color-accent-light: rgba(229, 169, 60, 0.12);
+  --color-accent-glow: rgba(229, 169, 60, 0.28);
+
+  --color-text: #1C2526;           /* Dark Charcoal */
+  --color-text-muted: #4A5557;     /* Soft Charcoal */
+  --color-text-light: #738082;
+  --color-text-faint: #9EA9AA;
+
+  --color-rose: #C62828;
+  --color-rose-light: rgba(198, 40, 40, 0.1);
+
+  /* Glassmorphism & Borders */
+  --glass-base: rgba(255, 255, 255, 0.88);
+  --glass-card: rgba(255, 255, 255, 0.92);
+  --glass-pill: rgba(255, 255, 255, 0.82);
+  
+  --border-glass: 1px solid rgba(28, 37, 38, 0.09);
+  --border-glass-subtle: 1px solid rgba(28, 37, 38, 0.06);
+  --border-teal: 1px solid rgba(0, 77, 64, 0.22);
+  --border-gold: 1px solid rgba(229, 169, 60, 0.35);
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* 3D Shadows & Layering */
+  --shadow-subtle: 0 4px 18px -2px rgba(28, 37, 38, 0.05);
+  --shadow-glass: 0 12px 30px -4px rgba(28, 37, 38, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+  --shadow-card: 0 10px 24px -3px rgba(28, 37, 38, 0.06), 0 2px 6px -1px rgba(28, 37, 38, 0.02);
+  --shadow-card-hover: 0 24px 44px -8px rgba(0, 77, 64, 0.12), 0 0 0 1px rgba(0, 77, 64, 0.2);
+  --shadow-3d-lift: 0 25px 50px -12px rgba(28, 37, 38, 0.16), 0 10px 20px -5px rgba(0, 77, 64, 0.08);
+}
+
+/* Global Reset & Base Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(circle at 8% 8%, rgba(0, 77, 64, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 92% 16%, rgba(229, 169, 60, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(0, 77, 64, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
+  color: var(--color-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* 3D Background Canvas (Hosts 3D Particle Wave Grid + Floating Glass Spheres) */
+#spline-bg-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#spline-bg-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+spline-viewer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+/* Stacking context */
+header, main, section, footer, .glass-modal-overlay {
+  position: relative;
+  z-index: 10;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f4f6;
+}
+::-webkit-scrollbar-thumb {
+  background: #c5ced0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* ==========================================================================
+   GLASSSHADE UTILITIES
+   ========================================================================== */
+.glass-panel {
+  background: var(--glass-base);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: var(--border-glass);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-card {
+  background: var(--glass-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--border-glass-subtle);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+  transform-style: preserve-3d;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 77, 64, 0.25);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ==========================================================================
+   EFFECT 2: 3D CARD ELEVATION & PARALLAX TILT (3D GYROSCOPE)
+   ========================================================================== */
+.card-3d-tilt {
+  position: relative;
+  transition: transform 0.12s ease-out, box-shadow 0.25s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-3d-tilt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.45),
+    transparent 45%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+
+.card-3d-tilt:hover::before {
+  opacity: 1;
+}
+
+.card-3d-tilt:hover {
+  box-shadow: var(--shadow-3d-lift);
+}
+
+/* 3D Content Separation Layers */
+.tilt-layer-image {
+  transform: translateZ(12px);
+  transition: transform 0.2s ease-out;
+}
+
+.tilt-layer-content {
+  transform: translateZ(20px);
+  transition: transform 0.2s ease-out;
+}
+
+.glass-pill {
+  background: var(--glass-pill);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: var(--border-glass);
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(28, 37, 38, 0.04);
+}
+
+/* ==========================================================================
+   BUTTONS (Deep Teal & Warm Gold)
+   ========================================================================== */
+.btn-primary, .btn-emerald {
+  background: linear-gradient(135deg, #004D40 0%, #00362D 100%);
+  color: #ffffff !important;
+  font-weight: 700;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 77, 64, 0.25);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-primary:hover, .btn-emerald:hover {
+  background: linear-gradient(135deg, #00695C 0%, #004D40 100%);
+  box-shadow: 0 8px 22px rgba(0, 77, 64, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-accent, .btn-saffron {
+  background: linear-gradient(135deg, #E5A93C 0%, #D4982B 100%);
+  color: #1C2526 !important;
+  font-weight: 800;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 14px rgba(229, 169, 60, 0.3);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-accent:hover, .btn-saffron:hover {
+  background: linear-gradient(135deg, #F0B84D 0%, #E5A93C 100%);
+  box-shadow: 0 8px 22px rgba(229, 169, 60, 0.42);
+  transform: translateY(-2px);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  color: var(--color-text) !important;
+  font-weight: 600;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(28, 37, 38, 0.12);
+  box-shadow: 0 2px 8px rgba(28, 37, 38, 0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-glass:hover {
+  background: #ffffff;
+  border-color: var(--color-primary);
+  color: var(--color-primary) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 77, 64, 0.12);
+}
+
+.btn-rose {
+  background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+  color: #ffffff !important;
+  font-weight: 700;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(198, 40, 40, 0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-rose:hover {
+  background: linear-gradient(135deg, #E53935 0%, #C62828 100%);
+  box-shadow: 0 8px 22px rgba(198, 40, 40, 0.38);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   FORM INPUTS
+   ========================================================================== */
+.glass-input {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(28, 37, 38, 0.14);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-shadow: 0 1px 3px rgba(28, 37, 38, 0.03);
+}
+
+.glass-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 77, 64, 0.16);
+  background: #ffffff;
+}
+
+/* ==========================================================================
+   BADGES & DIETARY LABELS
+   ========================================================================== */
+.diet-badge-veg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 77, 64, 0.1);
+  border: 1px solid rgba(0, 77, 64, 0.28);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+}
+
+.diet-badge-nonveg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-rose-light);
+  border: 1px solid rgba(198, 40, 40, 0.28);
+  color: var(--color-rose);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+}
+
+.diet-badge-donation {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-accent-light);
+  border: 1px solid rgba(229, 169, 60, 0.4);
+  color: #8C5B00;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(229, 169, 60, 0.15);
+}
+
+.diet-dot-veg {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  box-shadow: 0 0 6px rgba(0, 77, 64, 0.5);
+}
+
+.diet-dot-nonveg {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-rose);
+  box-shadow: 0 0 6px rgba(198, 40, 40, 0.5);
+}
+
+.diet-dot-donation {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  box-shadow: 0 0 6px rgba(229, 169, 60, 0.6);
+}
+
+/* Ticking Timer Element */
+.live-timer-chip {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(229, 169, 60, 0.45);
+  color: #8C5B00;
+  box-shadow: 0 2px 6px rgba(28, 37, 38, 0.08);
+}
+
+.live-timer-chip.urgent {
+  border-color: rgba(198, 40, 40, 0.45);
+  color: var(--color-rose);
+  background: #FFF5F5;
+  animation: pulse-border-light 1.5s infinite;
+}
+
+@keyframes pulse-border-light {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(198, 40, 40, 0);
+  }
+}
+
+/* ==========================================================================
+   DONATION SPOTLIGHT BANNER
+   ========================================================================== */
+.donation-spotlight-bar {
+  background: linear-gradient(135deg, #FFFDF8 0%, #FEF8EC 50%, #F0F7F6 100%);
+  border: 1.5px solid rgba(229, 169, 60, 0.35);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 24px -4px rgba(229, 169, 60, 0.14);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   MODALS & BACKDROP
+   ========================================================================== */
+.glass-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 37, 38, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.glass-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.glass-modal-container {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(28, 37, 38, 0.1);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 60px -10px rgba(28, 37, 38, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  color: var(--color-text);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-modal-overlay.active .glass-modal-container {
+  transform: translateY(0) scale(1);
+}
+
+/* ==========================================================================
+   HERO 3D VIEWPORT & GLOW
+   ========================================================================== */
+.spline-wrapper {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.85) 0%, rgba(241, 244, 246, 0.5) 100%);
+  border: 1px solid rgba(28, 37, 38, 0.08);
+  box-shadow: 0 16px 36px -8px rgba(0, 77, 64, 0.08);
+}
+
+.spline-ambient-glow-1 {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(0, 77, 64, 0.16) 0%, transparent 70%);
+  top: -30px;
+  left: -30px;
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.spline-ambient-glow-2 {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(229, 169, 60, 0.16) 0%, transparent 70%);
+  bottom: -40px;
+  right: -40px;
+  filter: blur(55px);
+  pointer-events: none;
+}
+
+/* Scanner Viewport */
+.scanner-viewport {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  height: 260px;
+  margin: 0 auto;
+  border-radius: 1.25rem;
+  background: #0D1617;
+  overflow: hidden;
+  border: 2px solid rgba(0, 77, 64, 0.6);
+  box-shadow: 0 0 30px rgba(0, 77, 64, 0.25);
+}
+
+.scanner-laser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #E5A93C, #004D40, transparent);
+  box-shadow: 0 0 15px #004D40;
+  animation: laser-scan 2.4s ease-in-out infinite;
+}
+
+@keyframes laser-scan {
+  0% { top: 5%; }
+  50% { top: 92%; }
+  100% { top: 5%; }
+}
+
+/* Radar Map */
+.glass-map-canvas {
+  position: relative;
+  width: 100%;
+  height: 440px;
+  background: #F8F9FA;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(28, 37, 38, 0.1);
+  box-shadow: 0 10px 30px rgba(28, 37, 38, 0.05);
+}
+
+.map-grid-pattern {
+  position: absolute;
+  inset: 0;
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(28, 37, 38, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(28, 37, 38, 0.04) 1px, transparent 1px);
+}
+
+.map-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.map-pin:hover {
+  transform: translate(-50%, -50%) scale(1.18);
+  z-index: 20;
+}
+
+.map-pin-pulse {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0, 77, 64, 0.22);
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  top: -7px;
+  left: -7px;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-receipt-container {
+    border: 2px solid #000 !important;
+    color: #000 !important;
+    background: #fff !important;
+    padding: 24px !important;
+    box-shadow: none !important;
+  }
+}
